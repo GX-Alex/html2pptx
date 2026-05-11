@@ -1,8 +1,10 @@
 # html2pptx
 
-Browser-rendered HTML/WebDeck to editable PowerPoint PPTX.
+Convert browser-rendered HTML/WebDeck slide decks to editable PowerPoint PPTX files, not screenshot-only exports.
 
 GitHub: <https://github.com/GX-Alex/html2pptx>
+
+![html2pptx demo overview](assets/demo-overview.svg)
 
 Choose a language:
 
@@ -18,6 +20,8 @@ Choose a language:
 - `skills/html2pptx/scripts/html_dom_to_editable_svg.js`: Chromium DOM/CSS/SVG extractor.
 - `skills/html2pptx/scripts/svg_to_pptx`: native DrawingML PPTX converter.
 - `AGENTS.md`, `CLAUDE.md`, `OPENCODE.md`: agent-specific usage notes.
+- `examples/basic-deck.html`: minimal deck for a first conversion test.
+- `docs/PROMOTION.md`: launch copy, GitHub topics, and outreach notes.
 
 ## Quick Start After Clone
 
@@ -25,7 +29,7 @@ Choose a language:
 git clone https://github.com/GX-Alex/html2pptx.git
 cd html2pptx
 python -m pip install -r requirements.txt
-python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
+python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx
 ```
 
 ## Agent Usage
@@ -39,3 +43,11 @@ All agents ultimately call the same command:
 ```bash
 python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
 ```
+
+## Project Visibility Checklist
+
+- Add GitHub topics listed in `docs/PROMOTION.md`.
+- Use `assets/social-preview.svg` as the source artwork for the repository social preview.
+- Publish `v0.1.0` with the notes in `CHANGELOG.md`.
+- Share the launch drafts in `docs/PROMOTION.md`.
+- Label beginner-friendly tasks using the templates in `.github/ISSUE_TEMPLATE/`.

@@ -2,6 +2,10 @@
 
 Convert browser-rendered HTML/WebDeck slide decks to editable PowerPoint PPTX.
 
+Most HTML-to-PPTX exporters flatten slides into images. `html2pptx` tries to preserve editable DOM text, CSS boxes, SVG primitives, and ECharts vectors as native PowerPoint objects.
+
+![html2pptx demo overview](assets/demo-overview.svg)
+
 The pipeline renders the HTML in Chromium, extracts visible DOM/CSS/SVG/ECharts content into editable SVG primitives, then converts those SVG primitives to native PowerPoint DrawingML shapes.
 
 GitHub: <https://github.com/GX-Alex/html2pptx>
@@ -13,6 +17,12 @@ GitHub: <https://github.com/GX-Alex/html2pptx>
 - No full-slide screenshot fallback by default.
 - Works as a Codex skill, as a Claude Code / opencode project skill, and as a plain CLI.
 - Includes troubleshooting notes for blank charts, missing text, long scroll pages, and browser launch failures.
+
+## Why It Exists
+
+AI-generated decks and WebDeck-style presentations often start as HTML, but teams still need PowerPoint for editing, review, and sharing. Screenshot-based export looks acceptable at first, then fails when someone needs to edit a title, recolor a chart, or move a shape.
+
+`html2pptx` is built for that gap: it favors editable PowerPoint output over opaque slide screenshots.
 
 ## Best-Fit Use Cases
 
@@ -59,6 +69,12 @@ Convert a deck:
 
 ```bash
 python skills/html2pptx/scripts/html2pptx.py input.html -o output.pptx
+```
+
+Try the included example:
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx
 ```
 
 If Chrome cannot be found:
@@ -184,3 +200,11 @@ Some generated decks place a complete web page inside each slide, for example:
 ```
 
 This is not a normal slide fragment. Browsers repair this invalid DOM, and the extractor may see only part of the intended page. If the nested page is also a long `100vh`/scroll layout, content beyond the first 1280x720 viewport is clipped or appears outside the PPT slide. In these cases, preprocess the HTML into true slide fragments or split/re-layout the long page before conversion.
+
+## Grow the Project
+
+- Add GitHub topics from `docs/PROMOTION.md`.
+- Set the repository social preview from `assets/social-preview.svg`.
+- Publish the first release using `CHANGELOG.md`.
+- Share the launch drafts in `docs/PROMOTION.md`.
+- Use the issue templates under `.github/ISSUE_TEMPLATE/` to collect bugs, feature requests, and good-first-issue contributions.

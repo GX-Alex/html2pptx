@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>html2pptx basic demo</title>
+  <style>
+    body {
+      margin: 0;
+      background: #e5e7eb;
+      font-family: Inter, Arial, sans-serif;
+    }
+    .deck-slide {
+      width: 1280px;
+      height: 720px;
+      box-sizing: border-box;
+      padding: 64px 76px;
+      background: #f8fafc;
+      color: #111827;
+      position: relative;
+      overflow: hidden;
+    }
+    h1 {
+      margin: 0;
+      font-size: 56px;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin-top: 16px;
+      font-size: 24px;
+      color: #64748b;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 72px;
+    }
+    .card {
+      border: 2px solid #bfdbfe;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 26px;
+      min-height: 150px;
+    }
+    .card strong {
+      display: block;
+      color: #2563eb;
+      font-size: 34px;
+      margin-bottom: 16px;
+    }
+    .card span {
+      font-size: 22px;
+      color: #334155;
+    }
+    .bar {
+      position: absolute;
+      left: 76px;
+      bottom: 58px;
+      width: 520px;
+      height: 18px;
+      background: #2563eb;
+      border-radius: 9px;
+    }
+  </style>
+</head>
+<body>
+  <section class="deck-slide">
+    <h1>Editable HTML to PowerPoint</h1>
+    <p class="subtitle">DOM text, CSS boxes, SVG primitives, and chart vectors.</p>
+    <div class="cards">
+      <div class="card">
+        <strong>HTML</strong>
+        <span>Render slide-sized documents in Chromium.</span>
+      </div>
+      <div class="card">
+        <strong>SVG</strong>
+        <span>Extract visible DOM into editable primitives.</span>
+      </div>
+      <div class="card">
+        <strong>PPTX</strong>
+        <span>Write native PowerPoint DrawingML shapes.</span>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+</body>
+</html>

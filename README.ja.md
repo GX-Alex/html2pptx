@@ -2,6 +2,10 @@
 
 ブラウザでレンダリングした HTML/WebDeck スライドを、編集可能な PowerPoint PPTX に変換します。
 
+多くの HTML-to-PPTX ツールは、各スライドを画像として書き出します。`html2pptx` は、DOM テキスト、CSS ボックス、SVG プリミティブ、ECharts ベクターを、可能な限り PowerPoint の編集可能なネイティブ要素として残します。
+
+![html2pptx demo overview](assets/demo-overview.svg)
+
 処理の流れは、Chromium で HTML をレンダリングし、実際の DOM/CSS/SVG/ECharts から編集可能な SVG プリミティブを抽出し、それを PowerPoint のネイティブ DrawingML 図形へ変換する、というものです。
 
 GitHub: <https://github.com/GX-Alex/html2pptx>
@@ -13,6 +17,12 @@ GitHub: <https://github.com/GX-Alex/html2pptx>
 - デフォルトではスライド全体のスクリーンショットにフォールバックしません。
 - Codex skill、Claude Code / opencode のプロジェクト skill、通常の CLI として利用できます。
 - 空白チャート、欠落テキスト、長い Web ページ型スライド、ブラウザ起動失敗のトラブルシューティングを含みます。
+
+## なぜ必要か
+
+AI 生成スライドや WebDeck 形式のプレゼンテーションは HTML から始まることが多い一方で、レビュー、共有、編集には PowerPoint が必要になることがあります。スクリーンショット型の書き出しは見た目だけなら十分でも、タイトルの修正、チャートの色変更、図形の移動が必要になると不便です。
+
+`html2pptx` はこのギャップを埋めるため、スライド全体の画像化ではなく、編集可能な PPTX 出力を優先します。
 
 ## 適したユースケース
 
@@ -59,6 +69,12 @@ HTML を変換します。
 
 ```bash
 python skills/html2pptx/scripts/html2pptx.py input.html -o output.pptx
+```
+
+同梱サンプルを試す場合:
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx
 ```
 
 Chrome が見つからない場合:
@@ -182,3 +198,11 @@ PY
 ```
 
 これは通常のスライド断片ではありません。ブラウザはこの不正な DOM を自動修復するため、抽出器が意図した内容の一部しか見られない場合があります。さらに、そのページが `100vh` やスクロール型の長いレイアウトである場合、1280x720 の最初のビューポート外の内容は切り取られるか、PPT スライドの外に配置されます。前回の Hermes 例で問題が出たページは、この種類の「完全な Web ページ/長い Web ページ型レイアウト」であり、固定 16:9 の slide fragment ではありませんでした。変換前に HTML を通常のスライド断片へ前処理するか、長いページを分割・再レイアウトしてください。
+
+## プロジェクトを広げる
+
+- `docs/PROMOTION.md` の GitHub topics を追加します。
+- `assets/social-preview.svg` を使ってリポジトリの social preview を作成します。
+- `CHANGELOG.md` を使って最初の `v0.1.0` release を公開します。
+- `docs/PROMOTION.md` の投稿文案を使って共有します。
+- `.github/ISSUE_TEMPLATE/` のテンプレートで bug、feature request、good-first-issue を集めます。

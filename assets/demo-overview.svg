@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">html2pptx demo overview</title>
+  <desc id="desc">A three-step diagram showing HTML slide input, DOM to SVG extraction, and editable PPTX output.</desc>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="48" y="66" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="#111827">Editable HTML to PowerPoint pipeline</text>
+  <text x="48" y="104" font-family="Inter, Arial, sans-serif" font-size="18" fill="#475569">Render in Chromium, extract visible DOM/SVG/ECharts, then write native DrawingML shapes.</text>
+  <g transform="translate(48 148)">
+    <rect width="310" height="260" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="24" y="44" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="750" fill="#0f172a">1. HTML / WebDeck</text>
+    <rect x="24" y="78" width="170" height="20" rx="5" fill="#0284c7"/>
+    <rect x="24" y="118" width="250" height="16" rx="4" fill="#cbd5e1"/>
+    <rect x="24" y="150" width="110" height="70" rx="8" fill="#e0f2fe" stroke="#38bdf8"/>
+    <rect x="154" y="150" width="110" height="70" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+    <text x="24" y="244" font-family="Inter, Arial, sans-serif" font-size="15" fill="#64748b">Slide-sized DOM, CSS, SVG, charts</text>
+  </g>
+  <g transform="translate(445 148)">
+    <rect width="310" height="260" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="24" y="44" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="750" fill="#0f172a">2. Editable SVG</text>
+    <path d="M40 205 C80 118, 128 146, 154 96 S236 112, 268 68" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="80" cy="172" r="11" fill="#10b981"/>
+    <circle cx="154" cy="96" r="11" fill="#eab308"/>
+    <circle cx="236" cy="100" r="11" fill="#ef4444"/>
+    <rect x="40" y="62" width="82" height="32" rx="7" fill="#e0f2fe" stroke="#38bdf8"/>
+    <text x="24" y="244" font-family="Inter, Arial, sans-serif" font-size="15" fill="#64748b">Text, paths, rects, lines, chart vectors</text>
+  </g>
+  <g transform="translate(842 148)">
+    <rect width="310" height="260" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="24" y="44" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="750" fill="#0f172a">3. Editable PPTX</text>
+    <rect x="34" y="78" width="242" height="142" rx="10" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+    <rect x="58" y="108" width="108" height="18" rx="4" fill="#2563eb"/>
+    <rect x="58" y="144" width="78" height="44" rx="5" fill="#2563eb"/>
+    <rect x="150" y="124" width="78" height="64" rx="5" fill="#eab308"/>
+    <rect x="240" y="96" width="18" height="92" rx="4" fill="#10b981"/>
+    <text x="24" y="244" font-family="Inter, Arial, sans-serif" font-size="15" fill="#64748b">Native PowerPoint text and shapes</text>
+  </g>
+  <path d="M378 278h45" stroke="#2563eb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M408 258l24 20-24 20" fill="none" stroke="#2563eb" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M775 278h45" stroke="#2563eb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M805 258l24 20-24 20" fill="none" stroke="#2563eb" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
