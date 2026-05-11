@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML2PPTX"
+  short_description: "Convert HTML decks to editable PPTX"
+  default_prompt: "Use $html2pptx to convert this HTML slide deck into an editable PPTX."
