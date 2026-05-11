@@ -12,7 +12,8 @@ Choose a language:
 
 ## What This Repository Contains
 
-- `skills/html2pptx`: a portable skill folder for Codex-style skill runtimes.
+- `skills/html2pptx`: the shared implementation skill folder and scripts.
+- `.claude/skills/html2pptx/SKILL.md`: project-skill entry point for Claude Code and opencode.
 - `skills/html2pptx/scripts/html2pptx.py`: command-line wrapper.
 - `skills/html2pptx/scripts/html_dom_to_editable_svg.js`: Chromium DOM/CSS/SVG extractor.
 - `skills/html2pptx/scripts/svg_to_pptx`: native DrawingML PPTX converter.
@@ -30,8 +31,8 @@ python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
 ## Agent Usage
 
 - **Codex**: install `skills/html2pptx` into `${CODEX_HOME:-$HOME/.codex}/skills`, then invoke `$html2pptx`.
-- **Claude Code**: open this repository, read `CLAUDE.md`, then run the CLI wrapper.
-- **opencode**: open this repository, read `OPENCODE.md` or `AGENTS.md`, then run the CLI wrapper.
+- **Claude Code**: open the cloned repository. Claude Code can discover the project skill at `.claude/skills/html2pptx/SKILL.md`; you can ask it to use the `html2pptx` skill.
+- **opencode**: open the cloned repository. opencode can also discover `.claude/skills/html2pptx/SKILL.md`; `AGENTS.md` and `OPENCODE.md` provide the repo-level instructions.
 
 All agents ultimately call the same command:
 

@@ -11,7 +11,7 @@ GitHub: <https://github.com/GX-Alex/html2pptx>
 - Editable PPTX output: text and shapes are native PowerPoint objects where possible.
 - Better chart support: ECharts charts are forced to SVG renderer and exported as vector primitives.
 - No full-slide screenshot fallback by default.
-- Works as a Codex skill and as a plain CLI for Claude Code or opencode.
+- Works as a Codex skill, as a Claude Code / opencode project skill, and as a plain CLI.
 - Includes troubleshooting notes for blank charts, missing text, long scroll pages, and browser launch failures.
 
 ## Best-Fit Use Cases
@@ -96,15 +96,53 @@ Codex should read `skills/html2pptx/SKILL.md` and use the bundled scripts.
 
 ### Claude Code
 
-Open this repository in Claude Code. Ask Claude to follow `CLAUDE.md`, or run:
+The Claude Code project-skill entry point is:
+
+```text
+.claude/skills/html2pptx/SKILL.md
+```
+
+Usage:
+
+1. Open the cloned `html2pptx` repository in Claude Code.
+2. Ask Claude Code to use the `html2pptx` skill, for example:
+
+```text
+Use the html2pptx skill in this repository to convert deck.html to deck.pptx.
+```
+
+3. Claude Code reads `.claude/skills/html2pptx/SKILL.md` and calls the shared converter:
 
 ```bash
 python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
 ```
 
+You can also run the CLI directly without invoking the skill.
+
 ### opencode
 
-Open this repository in opencode. Ask it to follow `OPENCODE.md` or `AGENTS.md`, then run the same CLI wrapper.
+opencode can also discover the project skill in this repository:
+
+```text
+.claude/skills/html2pptx/SKILL.md
+```
+
+Usage:
+
+1. Open the cloned `html2pptx` repository in opencode.
+2. Ask opencode to use the `html2pptx` skill, for example:
+
+```text
+Use the html2pptx skill to convert deck.html into an editable PowerPoint file.
+```
+
+3. opencode follows `AGENTS.md` / `OPENCODE.md` and calls the same CLI wrapper:
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
+```
+
+In short, Claude Code and opencode use `.claude/skills/html2pptx/SKILL.md` as the project-skill entry point. The real converter remains in `skills/html2pptx` so there is only one implementation to maintain.
 
 ## Validation
 

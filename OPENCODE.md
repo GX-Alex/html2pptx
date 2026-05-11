@@ -2,6 +2,14 @@
 
 For HTML to editable PPTX conversion, use this repository when the input is a local HTML/WebDeck-style slide deck.
 
+opencode can use the project skill at:
+
+```text
+.claude/skills/html2pptx/SKILL.md
+```
+
+This project keeps the Claude Code/opencode skill entry point separate from the shared implementation. The conversion scripts live under `skills/html2pptx`.
+
 Run:
 
 ```bash

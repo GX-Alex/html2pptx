@@ -11,7 +11,7 @@ GitHub: <https://github.com/GX-Alex/html2pptx>
 - 編集可能な PPTX を生成します。可能な限りテキストと図形を PowerPoint のネイティブオブジェクトとして保持します。
 - ECharts を SVG renderer に切り替え、チャートをベクター要素として出力します。
 - デフォルトではスライド全体のスクリーンショットにフォールバックしません。
-- Codex skill としても、Claude Code / opencode から使う通常の CLI としても利用できます。
+- Codex skill、Claude Code / opencode のプロジェクト skill、通常の CLI として利用できます。
 - 空白チャート、欠落テキスト、長い Web ページ型スライド、ブラウザ起動失敗のトラブルシューティングを含みます。
 
 ## 適したユースケース
@@ -96,15 +96,53 @@ Codex は `skills/html2pptx/SKILL.md` を読み、同梱スクリプトを実行
 
 ### Claude Code
 
-Claude Code でこのリポジトリを開き、`CLAUDE.md` に従うか、次を実行します。
+Claude Code 用のプロジェクト skill 入口は次の場所にあります。
+
+```text
+.claude/skills/html2pptx/SKILL.md
+```
+
+使い方:
+
+1. クローンした `html2pptx` リポジトリを Claude Code で開きます。
+2. Claude Code に `html2pptx` skill を使うよう依頼します。
+
+```text
+Use the html2pptx skill in this repository to convert deck.html to deck.pptx.
+```
+
+3. Claude Code は `.claude/skills/html2pptx/SKILL.md` を読み、共有コンバーターを呼び出します。
 
 ```bash
 python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
 ```
 
+skill を使わずに、この CLI を直接実行することもできます。
+
 ### opencode
 
-opencode でこのリポジトリを開き、`OPENCODE.md` または `AGENTS.md` に従って同じ CLI ラッパーを実行します。
+opencode も、このリポジトリ内のプロジェクト skill を検出できます。
+
+```text
+.claude/skills/html2pptx/SKILL.md
+```
+
+使い方:
+
+1. クローンした `html2pptx` リポジトリを opencode で開きます。
+2. opencode に `html2pptx` skill を使うよう依頼します。
+
+```text
+Use the html2pptx skill to convert deck.html into an editable PowerPoint file.
+```
+
+3. opencode は `AGENTS.md` / `OPENCODE.md` のリポジトリ指示に従い、同じ CLI ラッパーを実行します。
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
+```
+
+つまり、Claude Code と opencode は `.claude/skills/html2pptx/SKILL.md` をプロジェクト skill の入口として使います。実際の変換処理は `skills/html2pptx` に集約されているため、実装は一箇所だけを保守すれば済みます。
 
 ## 編集可能性の確認
 

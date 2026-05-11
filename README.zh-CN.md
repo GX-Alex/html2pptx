@@ -11,7 +11,7 @@ GitHub：<https://github.com/GX-Alex/html2pptx>
 - 输出可编辑 PPTX：文本、形状尽量保留为 PowerPoint 原生对象。
 - 更好的图表支持：将 ECharts 强制为 SVG renderer，尽量导出为矢量原语。
 - 默认不使用整页截图兜底。
-- 既可以作为 Codex skill 使用，也可以作为 Claude Code / opencode 的普通 CLI 使用。
+- 既可以作为 Codex skill 使用，也可以作为 Claude Code / opencode 的项目级 skill 或普通 CLI 使用。
 - 附带空白图表、文本缺失、长网页页面、浏览器启动失败等排障说明。
 
 ## 适合使用场景
@@ -96,15 +96,53 @@ Codex 会读取 `skills/html2pptx/SKILL.md`，然后调用内置脚本完成转�
 
 ### Claude Code
 
-在 Claude Code 中打开本仓库，让 Claude 读取 `CLAUDE.md`，或者直接运行：
+Claude Code 的项目级 skill 入口位于：
+
+```text
+.claude/skills/html2pptx/SKILL.md
+```
+
+使用方式：
+
+1. 在 Claude Code 中打开克隆后的 `html2pptx` 仓库。
+2. 让 Claude Code 使用 `html2pptx` skill，例如：
+
+```text
+Use the html2pptx skill in this repository to convert deck.html to deck.pptx.
+```
+
+3. Claude Code 会读取 `.claude/skills/html2pptx/SKILL.md`，再调用共享脚本：
 
 ```bash
 python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
 ```
 
+如果不想通过 skill，也可以直接运行上面的 CLI。
+
 ### opencode
 
-在 opencode 中打开本仓库，让它读取 `OPENCODE.md` 或 `AGENTS.md`，然后运行同一个 CLI 包装脚本。
+opencode 也可以发现本仓库中的项目级 skill：
+
+```text
+.claude/skills/html2pptx/SKILL.md
+```
+
+使用方式：
+
+1. 在 opencode 中打开克隆后的 `html2pptx` 仓库。
+2. 让 opencode 使用 `html2pptx` skill，例如：
+
+```text
+Use the html2pptx skill to convert deck.html into an editable PowerPoint file.
+```
+
+3. opencode 会按 `AGENTS.md` / `OPENCODE.md` 的仓库级说明，调用同一个 CLI 包装脚本：
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx
+```
+
+也就是说，Claude Code 和 opencode 使用的是 `.claude/skills/html2pptx/SKILL.md` 这个项目级 skill 入口；真正的转换实现仍统一放在 `skills/html2pptx`，避免多份脚本互相漂移。
 
 ## 验证是否可编辑
 
