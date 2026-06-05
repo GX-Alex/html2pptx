@@ -16,6 +16,7 @@ GitHub：<https://github.com/GX-Alex/html2pptx>
 - 支持普通单页 HTML：没有 `.deck-slide` 的输入会自动包装成一页 1280x720 幻灯片。
 - 更好的图表支持：将 ECharts 强制或重建为 SVG renderer，尽量导出为矢量原语。
 - 更好的圆角框支持：四边一致的 CSS 圆角边框会转换为可编辑的带描边圆角矩形。
+- 更好的图标支持：常见 Font Awesome Free solid 图标会先内联为 SVG path 再转换。
 - 默认不使用整页截图兜底。
 - 既可以作为 Codex skill 使用，也可以作为 Claude Code / opencode 的项目级 skill 或普通 CLI 使用。
 - 附带空白图表、文本缺失、长网页页面、浏览器启动失败等排障说明。

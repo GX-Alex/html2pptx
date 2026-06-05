@@ -7,6 +7,7 @@ This wrapper runs:
 from __future__ import annotations
 
 import argparse
+from html import escape as html_escape
 import os
 import re
 import shutil
@@ -21,6 +22,25 @@ HTML_TO_SVG = SCRIPT_DIR / "html_dom_to_editable_svg.js"
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from svg_to_pptx import create_pptx_with_native_svg  # noqa: E402
+from fontawesome_subset import FA_SOLID_ICONS  # noqa: E402
+
+
+FONTAWESOME_INLINE_STYLE = """
+<style id="html2pptx-fontawesome-inline-svg">
+  .fa-inline-svg {
+    display: inline-block !important;
+    width: 1em !important;
+    height: 1em !important;
+    vertical-align: -0.125em !important;
+    color: inherit;
+    fill: currentColor;
+    flex: none !important;
+  }
+  .fa-inline-svg path {
+    fill: currentColor;
+  }
+</style>
+"""
 
 
 AUTO_WRAP_STYLE = """
@@ -81,30 +101,105 @@ def html_needs_deck_wrapper(html: str) -> bool:
     return not re.search(r'class=["\'][^"\']*\bdeck-slide\b', html)
 
 
-def wrap_html_as_single_slide(input_html: Path, temp_root: Path) -> Path:
+def fontawesome_icon_name(classes: str) -> str | None:
+    ignored = {
+        "fa",
+        "fas",
+        "far",
+        "fab",
+        "fal",
+        "fad",
+        "fa-solid",
+        "fa-regular",
+        "fa-brands",
+        "fa-fw",
+        "fa-lg",
+        "fa-xs",
+        "fa-sm",
+        "fa-1x",
+        "fa-2x",
+        "fa-3x",
+        "fa-4x",
+        "fa-5x",
+        "fa-6x",
+        "fa-7x",
+        "fa-8x",
+        "fa-9x",
+        "fa-10x",
+    }
+    for cls in classes.split():
+        if cls.startswith("fa-") and cls not in ignored:
+            return cls.removeprefix("fa-")
+    return None
+
+
+def inline_fontawesome_icons(html: str) -> tuple[str, int]:
+    count = 0
+
+    def repl(match: re.Match[str]) -> str:
+        nonlocal count
+        attrs = match.group(1)
+        class_match = re.search(r'\bclass\s*=\s*(["\'])(.*?)\1', attrs, flags=re.IGNORECASE | re.DOTALL)
+        if not class_match:
+            return match.group(0)
+        classes = class_match.group(2)
+        icon_name = fontawesome_icon_name(classes)
+        icon = FA_SOLID_ICONS.get(icon_name or "")
+        if not icon:
+            return match.group(0)
+
+        style_match = re.search(r'\bstyle\s*=\s*(["\'])(.*?)\1', attrs, flags=re.IGNORECASE | re.DOTALL)
+        style = style_match.group(2) if style_match else ""
+        width, height, path_data = icon
+        count += 1
+        return (
+            f'<svg class="fa-inline-svg {html_escape(classes, quote=True)}" '
+            f'viewBox="0 0 {width} {height}" aria-hidden="true" focusable="false" '
+            f'style="{html_escape(style, quote=True)};overflow:visible;">'
+            f'<path fill="currentColor" d="{html_escape(path_data, quote=True)}"></path>'
+            f"</svg>"
+        )
+
+    next_html = re.sub(r"<i\b([^>]*)>\s*</i>", repl, html, flags=re.IGNORECASE | re.DOTALL)
+    if count:
+        next_html = re.sub(
+            r"<link\b[^>]*(?:font-awesome|fontawesome)[^>]*>",
+            "",
+            next_html,
+            flags=re.IGNORECASE,
+        )
+        next_html = re.sub(r"</head\s*>", FONTAWESOME_INLINE_STYLE + "\n</head>", next_html, count=1, flags=re.IGNORECASE)
+    return next_html, count
+
+
+def preprocess_html(input_html: Path, temp_root: Path) -> tuple[Path, dict[str, int | bool]]:
     html = input_html.read_text(encoding="utf-8", errors="replace")
-    if not html_needs_deck_wrapper(html):
-        return input_html
+    html, icon_count = inline_fontawesome_icons(html)
+    needs_wrapper = html_needs_deck_wrapper(html)
 
-    html = re.sub(r"</head\s*>", AUTO_WRAP_STYLE + "\n</head>", html, count=1, flags=re.IGNORECASE)
-    html = re.sub(
-        r"<body([^>]*)>",
-        r'<body\1><div id="slides-container"><div class="deck-slide active"><div class="deck-stage"><section class="deck-page" data-page-id="p01">',
-        html,
-        count=1,
-        flags=re.IGNORECASE,
-    )
-    html = re.sub(
-        r"</body\s*>",
-        r"</section></div></div></div></body>",
-        html,
-        count=1,
-        flags=re.IGNORECASE,
-    )
+    if needs_wrapper:
+        html = re.sub(r"</head\s*>", AUTO_WRAP_STYLE + "\n</head>", html, count=1, flags=re.IGNORECASE)
+        html = re.sub(
+            r"<body([^>]*)>",
+            r'<body\1><div id="slides-container"><div class="deck-slide active"><div class="deck-stage"><section class="deck-page" data-page-id="p01">',
+            html,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+        html = re.sub(
+            r"</body\s*>",
+            r"</section></div></div></div></body>",
+            html,
+            count=1,
+            flags=re.IGNORECASE,
+        )
 
-    wrapped = temp_root / f"{input_html.stem}.html2pptx-wrapped.html"
-    wrapped.write_text(html, encoding="utf-8")
-    return wrapped
+    if not needs_wrapper and not icon_count:
+        return input_html, {"wrapped": False, "fontawesome_icons": 0}
+
+    preprocessed = temp_root / f"{input_html.stem}.html2pptx-preprocessed.html"
+    preprocessed.write_text(html, encoding="utf-8")
+    return preprocessed, {"wrapped": needs_wrapper, "fontawesome_icons": icon_count}
 
 
 def read_notes(notes_dir: Path) -> dict[str, str]:
@@ -158,12 +253,17 @@ def main() -> int:
         env["CHROME"] = str(args.chrome.expanduser().resolve())
 
     try:
-        extraction_html = wrap_html_as_single_slide(input_html, temp_root)
+        extraction_html, preprocess_stats = preprocess_html(input_html, temp_root)
         cmd = ["node", str(HTML_TO_SVG), str(extraction_html), str(project_dir)]
         if not args.quiet:
             print("[html2pptx] Extracting editable SVG with Chromium...", flush=True)
-            if extraction_html != input_html:
+            if preprocess_stats["wrapped"]:
                 print("[html2pptx] Auto-wrapped non-WebDeck HTML as a single slide.", flush=True)
+            if preprocess_stats["fontawesome_icons"]:
+                print(
+                    f"[html2pptx] Inlined {preprocess_stats['fontawesome_icons']} Font Awesome icons as SVG.",
+                    flush=True,
+                )
         subprocess.run(cmd, check=True, env=env)
 
         svg_files = sorted((project_dir / "svg_output").glob("*.svg"))

@@ -28,6 +28,7 @@ Choose a language:
 - Converts WebDeck decks and plain single-page HTML; plain HTML is auto-wrapped as one 1280x720 slide.
 - Keeps uniform rounded CSS boxes as editable PowerPoint rounded rectangles.
 - Rebuilds ECharts instances with SVG renderer where possible so charts stay vector/editable.
+- Inlines common Font Awesome Free solid icons as SVG paths before conversion.
 
 ## Quick Start After Clone
 

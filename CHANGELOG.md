@@ -6,6 +6,7 @@
 - Improved ECharts extraction by rebuilding already-initialized chart instances with the SVG renderer when possible.
 - Preserved uniform rounded CSS borders as editable stroked rounded rectangles instead of four straight border lines.
 - Preserved inline SVG children inside text-bearing nodes and resolved `currentColor` to concrete SVG colors.
+- Inlined a small offline Font Awesome Free solid icon subset before extraction so common `<i class="fa-...">` icons become editable SVG paths.
 
 ## v0.1.0 - Initial Open Source Release
 

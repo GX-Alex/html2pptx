@@ -52,13 +52,14 @@ The generated PPTX is editable, not pixel-perfect. It preserves:
 - Rectangles, lines, circles, paths, and many SVG primitives as editable shapes.
 - Rounded boxes with uniform CSS borders as editable rounded rectangles.
 - ECharts charts as vector SVG primitives when the chart can render or be rebuilt in SVG mode.
+- Common Font Awesome Free solid `<i class="fa-...">` icons as editable SVG paths through an offline subset.
 - Speaker notes generated from slide text.
 
 Known limitations:
 
 - Full HTML documents nested inside each slide may still require preprocessing.
 - Long scroll-page layouts are clipped to the 1280x720 slide viewport.
-- CSS pseudo-elements, filters, shadows, complex masks, external icon fonts, and advanced gradients may degrade.
+- CSS pseudo-elements, filters, shadows, complex masks, unsupported external icon fonts, and advanced gradients may degrade.
 - The pipeline requires local Chromium/Chrome and Node.js.
 
 ## Cross-Agent Usage

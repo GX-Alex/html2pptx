@@ -48,6 +48,7 @@ Current converter strengths:
 - ECharts instances are forced or rebuilt with SVG renderer where possible.
 - Uniform rounded CSS borders are preserved as editable stroked rounded rectangles.
 - Inline SVG children inside text nodes are extracted instead of being swallowed by text conversion.
+- Common Font Awesome Free solid `<i class="fa-...">` icons are inlined as SVG paths before extraction.
 
 Known limits:
 

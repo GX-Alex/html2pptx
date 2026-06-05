@@ -16,6 +16,7 @@ GitHub: <https://github.com/GX-Alex/html2pptx>
 - Plain single-page HTML support: non-WebDeck input is auto-wrapped as one 1280x720 slide.
 - Better chart support: ECharts charts are forced or rebuilt with SVG renderer and exported as vector primitives where possible.
 - Better rounded box support: uniform rounded CSS borders become editable stroked rounded rectangles.
+- Better icon support: common Font Awesome Free solid icons are inlined as SVG paths before conversion.
 - No full-slide screenshot fallback by default.
 - Works as a Codex skill, as a Claude Code / opencode project skill, and as a plain CLI.
 - Includes troubleshooting notes for blank charts, missing text, long scroll pages, and browser launch failures.

@@ -16,6 +16,7 @@ GitHub: <https://github.com/GX-Alex/html2pptx>
 - `.deck-slide` を持たない通常の単一 HTML も、1 枚の 1280x720 スライドとして自動ラップできます。
 - ECharts を SVG renderer に切り替え、または再構築し、可能な限りチャートをベクター要素として出力します。
 - 均一な CSS 角丸ボーダーを、編集可能な線付き角丸矩形として保持します。
+- 一般的な Font Awesome Free solid アイコンを、変換前に SVG path としてインライン化します。
 - デフォルトではスライド全体のスクリーンショットにフォールバックしません。
 - Codex skill、Claude Code / opencode のプロジェクト skill、通常の CLI として利用できます。
 - 空白チャート、欠落テキスト、長い Web ページ型スライド、ブラウザ起動失敗のトラブルシューティングを含みます。
