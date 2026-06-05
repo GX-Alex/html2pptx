@@ -13,7 +13,9 @@ GitHub: <https://github.com/GX-Alex/html2pptx>
 ## Features
 
 - Editable PPTX output: text and shapes are native PowerPoint objects where possible.
-- Better chart support: ECharts charts are forced to SVG renderer and exported as vector primitives.
+- Plain single-page HTML support: non-WebDeck input is auto-wrapped as one 1280x720 slide.
+- Better chart support: ECharts charts are forced or rebuilt with SVG renderer and exported as vector primitives where possible.
+- Better rounded box support: uniform rounded CSS borders become editable stroked rounded rectangles.
 - No full-slide screenshot fallback by default.
 - Works as a Codex skill, as a Claude Code / opencode project skill, and as a plain CLI.
 - Includes troubleshooting notes for blank charts, missing text, long scroll pages, and browser launch failures.
@@ -29,6 +31,7 @@ AI-generated decks and WebDeck-style presentations often start as HTML, but team
 Use this tool when the source HTML is already shaped like a slide deck:
 
 - WebDeck-style documents with `.deck-slide`, `.deck-stage`, and fixed 16:9 slide pages.
+- Plain single-page HTML that should become one 16:9 PPT slide.
 - HTML presentations where each slide is designed for a 1280x720 viewport.
 - Decks with DOM text, CSS boxes, SVG diagrams, and ECharts charts that should remain editable.
 - Workflows where editability matters more than screenshot-level pixel perfection.

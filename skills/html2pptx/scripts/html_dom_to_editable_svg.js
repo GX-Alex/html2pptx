@@ -209,6 +209,29 @@ const extractorSource = String.raw`
     window.echarts.__webdeckSvgPatched = true;
   }
 
+  function rebuildExistingEchartsAsSvg(root) {
+    if (!window.echarts) return;
+    root.querySelectorAll("[_echarts_instance_]").forEach((node) => {
+      try {
+        const instance = window.echarts.getInstanceByDom(node);
+        if (!instance || node.querySelector("svg")) return;
+        const option = instance.getOption();
+        const width = node.clientWidth || node.getBoundingClientRect().width;
+        const height = node.clientHeight || node.getBoundingClientRect().height;
+        instance.dispose();
+        const next = window.echarts.init(node, null, {
+          renderer: "svg",
+          width,
+          height,
+        });
+        next.setOption(option, true);
+        next.resize({ width, height, animation: false });
+      } catch (error) {
+        console.warn("[html_dom_to_editable_svg] chart SVG rebuild failed", error);
+      }
+    });
+  }
+
   function runChartScripts(slide) {
     if (!slide || !window.echarts) return;
     forceEchartsSvgRenderer();
@@ -227,6 +250,7 @@ const extractorSource = String.raw`
         if (instance) instance.resize({ animation: false });
       } catch {}
     });
+    rebuildExistingEchartsAsSvg(slide);
   }
 
   function hasVisibleBackground(el, cs) {
@@ -313,6 +337,7 @@ const extractorSource = String.raw`
     const parts = vb ? vb.split(/[\s,]+/).map(Number) : [0, 0, num(el.getAttribute("width"), box.rawW || box.w), num(el.getAttribute("height"), box.rawH || box.h)];
     const vbW = parts[2] || box.rawW || box.w || 1;
     const vbH = parts[3] || box.rawH || box.h || 1;
+    const svgColor = rgba(getComputedStyle(el).color) || { hex: "#000000", opacity: 1 };
     const clone = el.cloneNode(true);
     clone.querySelectorAll("style, script, foreignObject").forEach((n) => n.remove());
     clone.querySelectorAll("*").forEach((n) => {
@@ -333,6 +358,13 @@ const extractorSource = String.raw`
       n.removeAttribute("clip-path");
       ["fill", "stroke"].forEach((attr) => {
         const value = n.getAttribute(attr);
+        if (value && value.trim().toLowerCase() === "currentcolor") {
+          n.setAttribute(attr, svgColor.hex);
+          if (svgColor.opacity < 1 && !n.getAttribute(attr + "-opacity")) {
+            n.setAttribute(attr + "-opacity", String(svgColor.opacity));
+          }
+          return;
+        }
         const parsed = rgba(value);
         if (parsed) {
           n.setAttribute(attr, parsed.hex);
@@ -428,6 +460,11 @@ const extractorSource = String.raw`
     const sides = borderSides(cs);
     if (hasVisibleBackground(el, cs) || sides.length > 0) {
       const bg = rgba(cs.backgroundColor) || inlineColor(el, "background-color") || inlineColor(el, "background");
+      const uniformBorder = sides.length === 4 && sides.every((border) =>
+        Math.abs(border.width - sides[0].width) < 0.2
+        && border.color.hex === sides[0].color.hex
+        && Math.abs(border.color.opacity - sides[0].color.opacity) < 0.01
+      );
       items.push({
         type: "rect",
         x, y,
@@ -436,31 +473,36 @@ const extractorSource = String.raw`
         rx: Math.min(num(cs.borderTopLeftRadius), box.w / 2, box.h / 2),
         fill: bg ? bg.hex : "none",
         fillOpacity: bg ? bg.opacity : 0,
-        stroke: "none",
-        strokeOpacity: 0,
-        strokeWidth: 0,
+        stroke: uniformBorder ? sides[0].color.hex : "none",
+        strokeOpacity: uniformBorder ? sides[0].color.opacity : 0,
+        strokeWidth: uniformBorder ? sides[0].width : 0,
       });
-      for (const border of sides) {
-        const side = border.side;
-        const x1 = side === "Right" ? x + box.w : x;
-        const x2 = side === "Left" ? x : x + box.w;
-        const y1 = side === "Bottom" ? y + box.h : y;
-        const y2 = side === "Top" ? y : y + box.h;
-        items.push({
-          type: "line",
-          x1: side === "Right" || side === "Left" ? x1 : x,
-          y1: side === "Top" || side === "Bottom" ? y1 : y,
-          x2: side === "Right" || side === "Left" ? x1 : x + box.w,
-          y2: side === "Top" || side === "Bottom" ? y1 : y + box.h,
-          stroke: border.color.hex,
-          strokeOpacity: border.color.opacity,
-          strokeWidth: border.width,
-        });
+      if (!uniformBorder) {
+        for (const border of sides) {
+          const side = border.side;
+          const x1 = side === "Right" ? x + box.w : x;
+          const y1 = side === "Bottom" ? y + box.h : y;
+          items.push({
+            type: "line",
+            x1: side === "Right" || side === "Left" ? x1 : x,
+            y1: side === "Top" || side === "Bottom" ? y1 : y,
+            x2: side === "Right" || side === "Left" ? x1 : x + box.w,
+            y2: side === "Top" || side === "Bottom" ? y1 : y + box.h,
+            stroke: border.color.hex,
+            strokeOpacity: border.color.opacity,
+            strokeWidth: border.width,
+          });
+        }
       }
     }
 
     if (shouldEmitText(el) && !seenText.has(el)) {
       seenText.add(el);
+      for (const child of el.children) {
+        if (child instanceof SVGSVGElement) {
+          walk(child, slideRect, items, seenText);
+        }
+      }
       const text = cleanText(el.tagName === "DIV" ? directText(el) : (el.innerText || ""));
       const color = rgba(cs.color) || inlineColor(el, "color") || { hex: "#000000", opacity: 1 };
       const fontSize = num(cs.fontSize, 16);

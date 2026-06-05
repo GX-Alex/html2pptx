@@ -39,8 +39,15 @@ Inspect `svg_output/NN_slide.svg`.
 Good fit:
 
 - Fixed 16:9 HTML/WebDeck slides.
+- Plain single-page HTML that should be auto-wrapped into one 1280x720 slide.
 - DOM text, CSS boxes, lines, SVG diagrams, and ECharts charts that should remain editable.
 - Decks where PowerPoint editability matters more than screenshot-perfect rendering.
+
+Current converter strengths:
+
+- ECharts instances are forced or rebuilt with SVG renderer where possible.
+- Uniform rounded CSS borders are preserved as editable stroked rounded rectangles.
+- Inline SVG children inside text nodes are extracted instead of being swallowed by text conversion.
 
 Known limits:
 

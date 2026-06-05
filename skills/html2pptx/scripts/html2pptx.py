@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -22,6 +23,46 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from svg_to_pptx import create_pptx_with_native_svg  # noqa: E402
 
 
+AUTO_WRAP_STYLE = """
+<style id="html2pptx-auto-deck-wrapper">
+  html, body {
+    width: 1280px !important;
+    height: 720px !important;
+    min-height: 720px !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+  #slides-container {
+    width: 1280px !important;
+    height: 720px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .deck-slide {
+    width: 1280px !important;
+    height: 720px !important;
+    display: block !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .deck-stage {
+    width: 1280px !important;
+    height: 720px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transform: none !important;
+  }
+  .deck-page {
+    width: 1280px !important;
+    height: 720px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+</style>
+"""
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Convert a WebDeck-style HTML presentation to editable PPTX.",
@@ -34,6 +75,36 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--canvas-format", default="ppt169", help="ppt-master canvas format")
     parser.add_argument("--quiet", action="store_true", help="Reduce output")
     return parser.parse_args()
+
+
+def html_needs_deck_wrapper(html: str) -> bool:
+    return not re.search(r'class=["\'][^"\']*\bdeck-slide\b', html)
+
+
+def wrap_html_as_single_slide(input_html: Path, temp_root: Path) -> Path:
+    html = input_html.read_text(encoding="utf-8", errors="replace")
+    if not html_needs_deck_wrapper(html):
+        return input_html
+
+    html = re.sub(r"</head\s*>", AUTO_WRAP_STYLE + "\n</head>", html, count=1, flags=re.IGNORECASE)
+    html = re.sub(
+        r"<body([^>]*)>",
+        r'<body\1><div id="slides-container"><div class="deck-slide active"><div class="deck-stage"><section class="deck-page" data-page-id="p01">',
+        html,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    html = re.sub(
+        r"</body\s*>",
+        r"</section></div></div></div></body>",
+        html,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+
+    wrapped = temp_root / f"{input_html.stem}.html2pptx-wrapped.html"
+    wrapped.write_text(html, encoding="utf-8")
+    return wrapped
 
 
 def read_notes(notes_dir: Path) -> dict[str, str]:
@@ -77,6 +148,7 @@ def main() -> int:
     temp_root: Path | None = None
     if args.workdir:
         project_dir = args.workdir.expanduser().resolve()
+        temp_root = Path(tempfile.mkdtemp(prefix="html2pptx-preprocess-"))
     else:
         temp_root = Path(tempfile.mkdtemp(prefix="html2pptx-"))
         project_dir = temp_root / "project"
@@ -86,9 +158,12 @@ def main() -> int:
         env["CHROME"] = str(args.chrome.expanduser().resolve())
 
     try:
-        cmd = ["node", str(HTML_TO_SVG), str(input_html), str(project_dir)]
+        extraction_html = wrap_html_as_single_slide(input_html, temp_root)
+        cmd = ["node", str(HTML_TO_SVG), str(extraction_html), str(project_dir)]
         if not args.quiet:
-            print("[html2pptx] Extracting editable SVG with Chromium...")
+            print("[html2pptx] Extracting editable SVG with Chromium...", flush=True)
+            if extraction_html != input_html:
+                print("[html2pptx] Auto-wrapped non-WebDeck HTML as a single slide.", flush=True)
         subprocess.run(cmd, check=True, env=env)
 
         svg_files = sorted((project_dir / "svg_output").glob("*.svg"))
@@ -122,7 +197,9 @@ def main() -> int:
             )
         return 0
     finally:
-        if temp_root and not args.keep_workdir:
+        if args.workdir and temp_root:
+            shutil.rmtree(temp_root, ignore_errors=True)
+        elif temp_root and not args.keep_workdir:
             shutil.rmtree(temp_root, ignore_errors=True)
 
 

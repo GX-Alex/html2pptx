@@ -23,6 +23,12 @@ Choose a language:
 - `examples/basic-deck.html`: minimal deck for a first conversion test.
 - `docs/PROMOTION.md`: launch copy, GitHub topics, and outreach notes.
 
+## Current Capabilities
+
+- Converts WebDeck decks and plain single-page HTML; plain HTML is auto-wrapped as one 1280x720 slide.
+- Keeps uniform rounded CSS boxes as editable PowerPoint rounded rectangles.
+- Rebuilds ECharts instances with SVG renderer where possible so charts stay vector/editable.
+
 ## Quick Start After Clone
 
 ```bash

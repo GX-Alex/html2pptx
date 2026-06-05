@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Added automatic single-slide wrapping for plain HTML files that do not contain `.deck-slide`.
+- Improved ECharts extraction by rebuilding already-initialized chart instances with the SVG renderer when possible.
+- Preserved uniform rounded CSS borders as editable stroked rounded rectangles instead of four straight border lines.
+- Preserved inline SVG children inside text-bearing nodes and resolved `currentColor` to concrete SVG colors.
+
 ## v0.1.0 - Initial Open Source Release
 
 - Added HTML/WebDeck to editable PPTX conversion pipeline.

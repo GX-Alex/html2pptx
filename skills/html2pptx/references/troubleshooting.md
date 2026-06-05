@@ -17,11 +17,12 @@ Fixes:
 
 ## Blank Charts
 
-The DOM extractor patches ECharts to SVG renderer before chart init scripts run. If charts are still blank:
+The DOM extractor patches ECharts to SVG renderer before chart init scripts run. It also attempts to rebuild already-initialized ECharts canvas instances with their existing `getOption()` data and an SVG renderer. If charts are still blank:
 
 - Confirm the deck has `script[type="application/webdeck-chart-init"]` blocks.
 - Confirm ECharts is available offline or embedded in the HTML.
 - Open the intermediate `svg_output/NN_slide.svg` to see whether chart primitives exist.
+- If the chart uses custom renderers, external images, maps, or unsupported extensions, use a screenshot fallback for that page.
 
 ## Missing Text
 
@@ -35,11 +36,21 @@ For nested full documents, preprocess the deck so each slide contains a normal f
 
 ## Wrong Borders or Black Text Boxes
 
-Single-side CSS borders must become separate SVG lines. If a deck shows heavy boxes:
+Uniform four-side CSS borders on rounded boxes are emitted as one rounded rectangle with a stroke. Single-side or mixed CSS borders must still become separate SVG lines. If a deck shows heavy boxes:
 
 - Inspect `svg_output/NN_slide.svg`.
 - Check whether elements use `border-left`, `border-bottom`, or table cell borders.
-- The bundled extractor emits separate `<line>` primitives for each border side.
+- Uniform rounded boxes should appear as `<rect rx="..." stroke="...">`; mixed borders should appear as `<line>` primitives.
+
+## Plain HTML Becomes Zero Slides
+
+The wrapper auto-detects HTML without `.deck-slide` and wraps the body as one WebDeck-compatible 1280x720 slide. If the source is a long webpage, only the first viewport is captured.
+
+Fixes:
+
+- Convert the source into fixed 16:9 sections before export.
+- Split long documents into multiple HTML files or WebDeck slides.
+- Use `--keep-workdir` and inspect the generated `sources/*.html2pptx-wrapped.html` file if layout looks unexpected.
 
 ## Off-Slide Content
 

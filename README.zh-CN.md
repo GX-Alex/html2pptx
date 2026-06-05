@@ -13,7 +13,9 @@ GitHub：<https://github.com/GX-Alex/html2pptx>
 ## 功能特性
 
 - 输出可编辑 PPTX：文本、形状尽量保留为 PowerPoint 原生对象。
-- 更好的图表支持：将 ECharts 强制为 SVG renderer，尽量导出为矢量原语。
+- 支持普通单页 HTML：没有 `.deck-slide` 的输入会自动包装成一页 1280x720 幻灯片。
+- 更好的图表支持：将 ECharts 强制或重建为 SVG renderer，尽量导出为矢量原语。
+- 更好的圆角框支持：四边一致的 CSS 圆角边框会转换为可编辑的带描边圆角矩形。
 - 默认不使用整页截图兜底。
 - 既可以作为 Codex skill 使用，也可以作为 Claude Code / opencode 的项目级 skill 或普通 CLI 使用。
 - 附带空白图表、文本缺失、长网页页面、浏览器启动失败等排障说明。
@@ -29,6 +31,7 @@ AI 生成 PPT、WebDeck 和 HTML 演示文稿通常先生成网页，但团队�
 当源 HTML 本身就是“幻灯片形态”时，最适合使用本工具：
 
 - WebDeck 风格文档，包含 `.deck-slide`、`.deck-stage`，并且每页是固定 16:9 画布。
+- 普通单页 HTML，希望转换成一页 16:9 PPT 幻灯片。
 - 每页按 1280x720 视口设计的 HTML 演示文稿。
 - 需要保留 DOM 文本、CSS 卡片/线条、SVG 图示、ECharts 图表为可编辑对象的场景。
 - 更重视 PPT 后续可编辑性，而不是截图级像素完全一致的场景。

@@ -36,7 +36,7 @@ python scripts/html2pptx.py input.html -o output.pptx \
 
 ## Recommended Workflow
 
-1. Confirm the input is an HTML slide deck, usually containing `.deck-slide`, `.deck-stage`, `.deck-page`, or similar fixed-size slide containers.
+1. Confirm the input is an HTML slide deck, usually containing `.deck-slide`, `.deck-stage`, `.deck-page`, or similar fixed-size slide containers. Plain single-page HTML is also supported and will be wrapped as one 1280x720 slide automatically.
 2. Run `scripts/html2pptx.py`.
 3. Inspect the command summary:
    - `pictures=0` is ideal for fully editable output.
@@ -50,12 +50,13 @@ The generated PPTX is editable, not pixel-perfect. It preserves:
 
 - Text as editable text boxes where possible.
 - Rectangles, lines, circles, paths, and many SVG primitives as editable shapes.
-- ECharts charts as vector SVG primitives when the original chart can render in SVG mode.
+- Rounded boxes with uniform CSS borders as editable rounded rectangles.
+- ECharts charts as vector SVG primitives when the chart can render or be rebuilt in SVG mode.
 - Speaker notes generated from slide text.
 
 Known limitations:
 
-- Full HTML documents nested inside each slide may require preprocessing.
+- Full HTML documents nested inside each slide may still require preprocessing.
 - Long scroll-page layouts are clipped to the 1280x720 slide viewport.
 - CSS pseudo-elements, filters, shadows, complex masks, external icon fonts, and advanced gradients may degrade.
 - The pipeline requires local Chromium/Chrome and Node.js.
