@@ -7,6 +7,7 @@
 - Preserved uniform rounded CSS borders as editable stroked rounded rectangles instead of four straight border lines.
 - Preserved inline SVG children inside text-bearing nodes and resolved `currentColor` to concrete SVG colors.
 - Inlined a small offline Font Awesome Free solid icon subset before extraction so common `<i class="fa-...">` icons become editable SVG paths.
+- Added cross-platform Chrome discovery, Windows-friendly documentation, and `--chrome-path` as an alias for `--chrome`.
 
 ## v0.1.0 - Initial Open Source Release
 

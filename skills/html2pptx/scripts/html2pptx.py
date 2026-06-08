@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from shutil import which
 from zipfile import ZipFile
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -86,12 +87,25 @@ AUTO_WRAP_STYLE = """
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Convert a WebDeck-style HTML presentation to editable PPTX.",
+        epilog=(
+            "Examples:\n"
+            "  python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx\n"
+            "  python skills/html2pptx/scripts/html2pptx.py deck.html -o deck.pptx --chrome \"C:/Program Files/Google/Chrome/Application/chrome.exe\"\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("input_html", type=Path, help="Input HTML deck path")
     parser.add_argument("-o", "--output", type=Path, required=True, help="Output .pptx path")
     parser.add_argument("--workdir", type=Path, default=None, help="Intermediate project directory")
     parser.add_argument("--keep-workdir", action="store_true", help="Keep intermediate SVG project")
-    parser.add_argument("--chrome", type=Path, default=None, help="Chrome/Chromium executable path")
+    parser.add_argument(
+        "--chrome",
+        "--chrome-path",
+        dest="chrome",
+        type=Path,
+        default=None,
+        help="Chrome/Chromium executable path; --chrome-path is accepted as an alias",
+    )
     parser.add_argument("--canvas-format", default="ppt169", help="ppt-master canvas format")
     parser.add_argument("--quiet", action="store_true", help="Reduce output")
     return parser.parse_args()
@@ -213,6 +227,67 @@ def read_notes(notes_dir: Path) -> dict[str, str]:
     return notes
 
 
+def chrome_candidates() -> list[Path]:
+    candidates: list[Path] = []
+
+    env_chrome = os.environ.get("CHROME")
+    if env_chrome:
+        candidates.append(Path(env_chrome))
+
+    for name in ("chrome", "google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "msedge"):
+        found = which(name)
+        if found:
+            candidates.append(Path(found))
+
+    if sys.platform == "darwin":
+        candidates.extend([
+            Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+            Path("/Applications/Chromium.app/Contents/MacOS/Chromium"),
+            Path("/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"),
+        ])
+    elif sys.platform.startswith("win"):
+        program_files = [
+            os.environ.get("PROGRAMFILES"),
+            os.environ.get("PROGRAMFILES(X86)"),
+            os.environ.get("LOCALAPPDATA"),
+        ]
+        for root in [Path(p) for p in program_files if p]:
+            candidates.extend([
+                root / "Google" / "Chrome" / "Application" / "chrome.exe",
+                root / "Chromium" / "Application" / "chrome.exe",
+                root / "Microsoft" / "Edge" / "Application" / "msedge.exe",
+            ])
+    else:
+        candidates.extend([
+            Path("/usr/bin/google-chrome"),
+            Path("/usr/bin/google-chrome-stable"),
+            Path("/usr/bin/chromium"),
+            Path("/usr/bin/chromium-browser"),
+            Path("/snap/bin/chromium"),
+            Path("/usr/bin/microsoft-edge"),
+        ])
+
+    seen: set[str] = set()
+    unique: list[Path] = []
+    for path in candidates:
+        key = os.path.normcase(str(path))
+        if key not in seen:
+            seen.add(key)
+            unique.append(path)
+    return unique
+
+
+def discover_chrome() -> Path | None:
+    for path in chrome_candidates():
+        try:
+            expanded = path.expanduser()
+            if expanded.exists():
+                return expanded.resolve()
+        except OSError:
+            continue
+    return None
+
+
 def summarize_pptx(path: Path) -> dict[str, int]:
     with ZipFile(path) as zf:
         slides = [
@@ -235,6 +310,11 @@ def main() -> int:
 
     if not input_html.exists():
         print(f"Input HTML not found: {input_html}", file=sys.stderr)
+        print(
+            "Tip: run the included smoke test first:\n"
+            "  python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx",
+            file=sys.stderr,
+        )
         return 2
     if input_html.suffix.lower() not in {".html", ".htm"}:
         print(f"Input does not look like HTML: {input_html}", file=sys.stderr)
@@ -251,6 +331,10 @@ def main() -> int:
     env = dict(os.environ)
     if args.chrome:
         env["CHROME"] = str(args.chrome.expanduser().resolve())
+    elif "CHROME" not in env:
+        discovered_chrome = discover_chrome()
+        if discovered_chrome:
+            env["CHROME"] = str(discovered_chrome)
 
     try:
         extraction_html, preprocess_stats = preprocess_html(input_html, temp_root)

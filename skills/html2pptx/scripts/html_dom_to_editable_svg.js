@@ -14,9 +14,49 @@ const { spawn } = require("child_process");
 
 const CANVAS_W = 1280;
 const CANVAS_H = 720;
-const CHROME =
-  process.env.CHROME ||
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+
+function firstExisting(paths) {
+  for (const candidate of paths) {
+    if (candidate && fs.existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
+function findChromeExecutable() {
+  if (process.env.CHROME) return process.env.CHROME;
+
+  if (process.platform === "darwin") {
+    return firstExisting([
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "/Applications/Chromium.app/Contents/MacOS/Chromium",
+      "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    ]);
+  }
+
+  if (process.platform === "win32") {
+    const roots = [
+      process.env.PROGRAMFILES,
+      process.env["PROGRAMFILES(X86)"],
+      process.env.LOCALAPPDATA,
+    ].filter(Boolean);
+    return firstExisting(roots.flatMap((root) => [
+      path.join(root, "Google", "Chrome", "Application", "chrome.exe"),
+      path.join(root, "Chromium", "Application", "chrome.exe"),
+      path.join(root, "Microsoft", "Edge", "Application", "msedge.exe"),
+    ]));
+  }
+
+  return firstExisting([
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/snap/bin/chromium",
+    "/usr/bin/microsoft-edge",
+  ]);
+}
+
+const CHROME = findChromeExecutable();
 
 function mkdirp(p) {
   fs.mkdirSync(p, { recursive: true });
@@ -83,6 +123,11 @@ class Cdp {
 }
 
 async function launchChrome(profileDir) {
+  if (!CHROME) {
+    throw new Error(
+      "Chrome/Chromium executable not found. Install Chrome/Chromium or pass --chrome/--chrome-path to html2pptx.py."
+    );
+  }
   const port = 9339 + Math.floor(Math.random() * 1000);
   const args = [
     `--remote-debugging-port=${port}`,

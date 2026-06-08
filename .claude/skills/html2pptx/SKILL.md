@@ -27,6 +27,13 @@ python skills/html2pptx/scripts/html2pptx.py input.html -o output.pptx \
   --chrome "/path/to/Google Chrome or Chromium"
 ```
 
+`--chrome-path` is also accepted as an alias. On Windows:
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx \
+  --chrome-path "C:/Program Files/Google/Chrome/Application/chrome.exe"
+```
+
 For debugging bad pages:
 
 ```bash

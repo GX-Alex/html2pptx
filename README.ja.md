@@ -88,6 +88,13 @@ python skills/html2pptx/scripts/html2pptx.py input.html -o output.pptx \
   --chrome "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 
+Windows では、バックスラッシュよりもスラッシュ、または Git Bash の `/c/...` パスを推奨します。
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx \
+  --chrome-path "C:/Program Files/Google/Chrome/Application/chrome.exe"
+```
+
 中間 SVG を残してデバッグする場合:
 
 ```bash

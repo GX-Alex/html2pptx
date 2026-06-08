@@ -11,6 +11,8 @@ Symptoms:
 Fixes:
 
 - Pass `--chrome /path/to/chrome`.
+- `--chrome-path` is accepted as an alias.
+- On Windows, use `--chrome-path "C:/Program Files/Google/Chrome/Application/chrome.exe"` or a Git Bash path such as `/c/Program Files/Google/Chrome/Application/chrome.exe`.
 - Prefer Playwright Chromium if installed:
   `python -c "from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()"`
 - The launcher already includes `--use-mock-keychain` and `--password-store=basic` to avoid macOS keychain prompts.

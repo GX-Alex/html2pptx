@@ -88,6 +88,13 @@ python skills/html2pptx/scripts/html2pptx.py input.html -o output.pptx \
   --chrome "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 
+On Windows, prefer forward slashes or Git Bash `/c/...` paths:
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx \
+  --chrome-path "C:/Program Files/Google/Chrome/Application/chrome.exe"
+```
+
 Keep intermediate SVGs:
 
 ```bash

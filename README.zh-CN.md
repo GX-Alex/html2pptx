@@ -88,6 +88,13 @@ python skills/html2pptx/scripts/html2pptx.py input.html -o output.pptx \
   --chrome "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 
+Windows 用户建议使用正斜杠路径，或 Git Bash 的 `/c/...` 路径：
+
+```bash
+python skills/html2pptx/scripts/html2pptx.py examples/basic-deck.html -o basic-deck.pptx \
+  --chrome-path "C:/Program Files/Google/Chrome/Application/chrome.exe"
+```
+
 保留中间 SVG 方便调试：
 
 ```bash
